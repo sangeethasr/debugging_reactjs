@@ -1,35 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import User from "./User";
 
 const UserList = ({ searchTerm }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   useEffect(() => {
+    // Changed values of setloading
+    setLoading(true)
     const fetchUsers = async () => {
-      const response = await fetch('https://api.example.com/users');
+      const response = await fetch("https://api.example.com/users");
       const data = await response.json();
       setUsers(data);
-    }
+      setLoading(false)
+    };
     fetchUsers();
   }, [searchTerm]);
 
-  const renderUserProfile = (profile) => {
-    return <div dangerouslySetInnerHTML={{ __html: profile }} />;
-  };
+ 
 
   return (
     <div>
-      {users.map(user => (
+      {users.map((user) => (
         <div key={user.id}>
-          <h2>{user.name}</h2>
-          {renderUserProfile(user.profile)}
-          <button onClick={() => {
-            fetch(`/api/users/${user.id}/activate`, { method: 'POST' })
-              .then(response => response.json())
-              .then(data => console.log(data));
-          }}>
-            Activate User
-          </button>
+            {/* Onclick function doesn't work here. Created another component for user */}
+          <User user={user} />
         </div>
       ))}
     </div>
@@ -37,13 +32,13 @@ const UserList = ({ searchTerm }) => {
 };
 
 const Dashboard = () => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const ws = new WebSocket('wss://api.example.com/notifications');
+    const ws = new WebSocket("wss://api.example.com/notifications");
     ws.onmessage = (event) => {
-      setNotifications(prev => [...prev, event.data]);
+      setNotifications((prev) => [...prev, event.data]);
     };
   }, []);
 
@@ -53,14 +48,11 @@ const Dashboard = () => {
 
   return (
     <div>
-      <input 
-        type="text" 
-        onChange={handleSearch} 
-        value={search}
-      />
+      <input type="text" onChange={handleSearch} value={search} />
       <UserList searchTerm={search} />
       <div>
         {notifications.map((note, index) => (
+          // Add key value into div tag
           <div>{note}</div>
         ))}
       </div>
